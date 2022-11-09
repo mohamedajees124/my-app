@@ -6,7 +6,7 @@ node{
 
       def mvnHome =  tool name: 'maven3', type: 'maven'   
       sh "${mvnHome}/bin/mvn clean package"
-	  sh 'mv target/myweb1*.war target/newapp.war'
+	  sh 'mv target/myweb*.war target/newapp.war'
    }
    stage('SonarQube Analysis') {
 	        def mvnHome =  tool name: 'maven3', type: 'maven'
@@ -15,7 +15,7 @@ node{
 	        }
 	    }
    stage('Build Docker Imager'){
-   sh 'docker build -t saidamo/myweb1:0.0.2 .'
+   sh 'docker build -t saidamo/myweb:0.0.2 .'
    }
    stage('Docker Image Push'){
    withCredentials([string(credentialsId: 'dockerPass', variable: 'dockerPassword')]) {
@@ -25,7 +25,7 @@ node{
    }
   stage('Nexus Image Push'){
    sh "docker login -u admin -p admin123 3.109.144.225:8083"
-   sh "docker tag saidamo/myweb1:0.0.2 3.109.144.225:8083/damo:1.0.0"
+   sh "docker tag saidamo/myweb:0.0.2 3.109.144.225:8083/damo:1.0.0"
    sh 'docker push 3.109.144.225:8083/damo:1.0.0'
    }
 
@@ -36,7 +36,7 @@ node{
 		//  do nothing if there is an exception
 	}
    stage('Docker deployment'){
-   sh 'docker run -d -p 8090:8080 --name tomcattest saidamo/myweb1:0.0.2' 
+   sh 'docker run -d -p 8090:8080 --name tomcattest saidamo/myweb:0.0.2' 
    }
 }
 }
